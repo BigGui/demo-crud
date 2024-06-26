@@ -11,14 +11,12 @@ if (!empty($_POST)) {
 
     if (!isset($_SERVER['HTTP_REFERER']) || !str_contains($_SERVER['HTTP_REFERER'], 'http://localhost:8080')) {
         $_SESSION['error'] = 'referer';
-        header('Location: index.php');
-        exit;
+        redirectTo('index.php');
     }
 
     if (!isset($_SESSION['token']) || !isset($_POST['token']) || $_SESSION['token'] !== $_POST['token']) {
         $_SESSION['error'] = 'csrf';
-        header('Location: index.php');
-        exit;
+        redirectTo('index.php');
     }
 
     $errorsList = [];
@@ -49,8 +47,8 @@ if (!empty($_POST)) {
         } else {
             $_SESSION['error'] = 'insert_ko';
         }
-        header('Location: index.php');
-        exit;
+        
+        redirectTo('index.php');
     }
 }
 
