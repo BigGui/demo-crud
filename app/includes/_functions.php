@@ -30,6 +30,30 @@ function redirectTo(string $url): void
     exit;
 }
 
+
+/**
+ * Get from an array a HTML list string
+ * @param array $array your array you want in HTML list
+ * @param string $ulClass an optional CSS class to add to UL element
+ * @param string $liClass an optional CSS class to add to LI elements
+ * @return string the HTML list
+ */
+function getArrayAsHTMLList(array $array, string $ulClass = '', string $liClass = ''): string
+{
+    // $values = '';
+    // foreach($array as $value){
+    //     $values .= "<li>{$value}</li>";
+    // }
+
+    $ulClass = $ulClass ? ' class="' . $ulClass . '"' : '';
+    $liClass = $liClass ? ' class="' . $liClass . '"' : '';
+
+    return '<ul' . $ulClass . '>'
+        . implode(array_map(fn ($v) => '<li' . $liClass . '>' . $v . '</li>', $array))
+        . '</ul>';
+}
+
+
 /**
  * Get HTML to display errors available in user SESSION
  *
@@ -41,9 +65,11 @@ function getHtmlErrors(array $errorsList): string
     if (!empty($_SESSION['errorsList'])) {
         $errors = $_SESSION['errorsList'];
         unset($_SESSION['errorsList']);
-        return '<ul class="notif-error">'
-            . implode(array_map(fn ($e) => '<li>' . $errorsList[$e] . '</li>', $errors))
-            . '</ul>';
+
+        return getArrayAsHTMLList(
+            array_map(fn ($e) => $errorsList[$e], $errors),
+            'notif-error'
+        );
     }
     return '';
 }
@@ -77,7 +103,7 @@ function preventCSRF(string $redirectUrl = 'index.php'): void
         addError('referer');
         redirectTo($redirectUrl);
     }
-    
+
     if (!isset($_SESSION['token']) || !isset($_REQUEST['token']) || $_SESSION['token'] !== $_REQUEST['token']) {
         addError('csrf');
         redirectTo($redirectUrl);
@@ -96,4 +122,16 @@ function addError(string $errorMsg): void
         $_SESSION['errorsList'] = [];
     }
     $_SESSION['errorsList'][] = $errorMsg;
+}
+
+/**
+ * Get HTML to display a product in the list
+ *
+ * @param array $product - Data for the product to display
+ * @return string HTML to display the product in the list
+ */
+function getHTMLProduct(array $product): string
+{
+    return $product['name_product'] . ' (' . $product['price'] . ' €)'
+        . ' <a href="actions.php?action=increase&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">augmenter</a>';
 }

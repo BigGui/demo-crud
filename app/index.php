@@ -62,12 +62,8 @@ generateToken();
             'max' => $maxPrice
         ]);
 
-        // foreach ($query->fetchAll() as $product) {
         while ($product = $query->fetch()) {
-            echo '<li>'
-                . $product['name_product'] . ' (' . $product['price'] . ' €)'
-                . ' <a href="actions.php?action=increase&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">augmenter</a>'
-                . '</li>';
+            echo '<li>' . getHTMLProduct($product) . '</li>';
         }
         ?>
     </ul>

@@ -26,31 +26,33 @@ if ($_REQUEST['action'] === 'increase' && isset($_REQUEST['id']) && is_numeric($
 }
 
 // Add a new prodcut from form
-else if ($_REQUEST['action'] === 'create') {
-    if (!isset($_POST['name_product']) || strlen($_POST['name_product']) === 0) {
+else if ($_REQUEST['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_REQUEST['name_product']) || strlen($_REQUEST['name_product']) === 0) {
         addError('product_name');
     }
     
-    if (strlen($_POST['name_product']) > 50) {
+    if (strlen($_REQUEST['name_product']) > 50) {
         addError('product_name_size');
     }
 
-    if (!isset($_POST['price']) || !is_numeric($_POST['price'])) {
+    if (!isset($_REQUEST['price']) || !is_numeric($_REQUEST['price'])) {
         addError('product_price');
     }
 
     if (!empty($_SESSION['errorsList'])) {
+        $_SESSION['formData'] = [
+            'name_product' => $_REQUEST['name_product'],
+            'price' => $_REQUEST['price']
+        ];
         redirectTo('index.php');
     }
 
     $insert = $dbCo->prepare("INSERT INTO `product`(`name_product`, `price`) VALUES (:name, :price);");
 
-    $bindValues = [
+    $isInsertOk = $insert->execute([
         'name' => htmlspecialchars($_POST['name_product']),
         'price' => round($_POST['price'], 2)
-    ];
-
-    $isInsertOk = $insert->execute($bindValues);
+    ]);
 
     if ($isInsertOk) {
         $_SESSION['msg'] = 'insert_ok';
