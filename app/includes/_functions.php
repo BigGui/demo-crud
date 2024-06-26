@@ -38,10 +38,12 @@ function redirectTo(string $url): void
  */
 function getHtmlErrors(array $errorsList): string
 {
-    if (isset($_SESSION['error'])) {
-        $e = $_SESSION['error'];
-        unset($_SESSION['error']);
-        return '<p class="notif-error">' . $errorsList[$e] . '</p>';
+    if (!empty($_SESSION['errorsList'])) {
+        $errors = $_SESSION['errorsList'];
+        unset($_SESSION['errorsList']);
+        return '<ul class="notif-error">'
+            . implode(array_map(fn ($e) => '<li>' . $errorsList[$e] . '</li>', $errors))
+            . '</ul>';
     }
     return '';
 }
@@ -54,7 +56,6 @@ function getHtmlErrors(array $errorsList): string
  */
 function getHtmlMessages(array $messagesList): string
 {
-
     if (isset($_SESSION['msg'])) {
         $m = $_SESSION['msg'];
         unset($_SESSION['msg']);
@@ -73,12 +74,26 @@ function preventCSRF(string $redirectUrl = 'index.php'): void
     global $globalUrl;
 
     if (!isset($_SERVER['HTTP_REFERER']) || !str_contains($_SERVER['HTTP_REFERER'], $globalUrl)) {
-        $_SESSION['error'] = 'referer';
+        addError('referer');
         redirectTo($redirectUrl);
     }
-
+    
     if (!isset($_SESSION['token']) || !isset($_REQUEST['token']) || $_SESSION['token'] !== $_REQUEST['token']) {
-        $_SESSION['error'] = 'csrf';
+        addError('csrf');
         redirectTo($redirectUrl);
     }
+}
+
+/**
+ * Add a new error message to display on next page. 
+ *
+ * @param string $errorMsg - Error message to display
+ * @return void
+ */
+function addError(string $errorMsg): void
+{
+    if (!isset($_SESSION['errorsList'])) {
+        $_SESSION['errorsList'] = [];
+    }
+    $_SESSION['errorsList'][] = $errorMsg;
 }

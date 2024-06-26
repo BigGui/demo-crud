@@ -21,28 +21,25 @@ if ($_REQUEST['action'] === 'increase' && isset($_REQUEST['id']) && is_numeric($
     if ($isUpdateOk) {
         $_SESSION['msg'] = 'update_ok';
     } else {
-        $_SESSION['error'] = 'update_ko';
+        addError('update_ko');
     }
 }
 
 // Add a new prodcut from form
 else if ($_REQUEST['action'] === 'create') {
-    
-    $errorsList = [];
     if (!isset($_POST['name_product']) || strlen($_POST['name_product']) === 0) {
-        $errorsList[] = 'Saisissez un nom pour le produit';
+        addError('product_name');
     }
-
+    
     if (strlen($_POST['name_product']) > 50) {
-        $errorsList[] = 'Saisissez un nom pour le produit de 50 caractères au maximum';
+        addError('product_name_size');
     }
 
     if (!isset($_POST['price']) || !is_numeric($_POST['price'])) {
-        $errorsList[] = 'Saisissez un prix au format numérique.';
+        addError('product_price');
     }
 
-    if (!empty($errorsList)) {
-        $_SESSION['errorsList'] = $errorsList;
+    if (!empty($_SESSION['errorsList'])) {
         redirectTo('index.php');
     }
 
@@ -58,7 +55,7 @@ else if ($_REQUEST['action'] === 'create') {
     if ($isInsertOk) {
         $_SESSION['msg'] = 'insert_ok';
     } else {
-        $_SESSION['error'] = 'insert_ko';
+        addError('insert_ko');
     }
 }
 

@@ -23,19 +23,16 @@ generateToken();
     </h1>
 
     <?php
-    echo getHtmlErrors($errors);
+    
     echo getHtmlMessages($messages);
+
+    echo getHtmlErrors($errors);
 
     ?>
 
     <h2>Ajouter un produit</h2>
 
-    <?php
-    if (!empty($_SESSION['errorsList'])) {
-        echo '<ul>' . implode(array_map(fn ($e) => '<li>' . $e . '</li>', $_SESSION['errorsList'])) . '</ul>';
-        unset($_SESSION['errorsList']);
-    }
-    ?>
+
     <form action="actions.php" method="post">
         <ul>
             <li>
