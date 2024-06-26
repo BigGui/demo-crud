@@ -30,7 +30,12 @@ function redirectTo(string $url): void
     exit;
 }
 
-
+/**
+ * Get HTML to display errors available in user SESSION
+ *
+ * @param array $errorsList - Available errors list
+ * @return string HTMl to display errors
+ */
 function getHtmlErrors(array $errorsList): string
 {
     if (isset($_SESSION['error'])) {
@@ -41,6 +46,12 @@ function getHtmlErrors(array $errorsList): string
     return '';
 }
 
+/**
+ * Get HTML to display messages available in user SESSION
+ *
+ * @param array $messagesList - Available Messages list
+ * @return string HTML to display messages
+ */
 function getHtmlMessages(array $messagesList): string
 {
 
