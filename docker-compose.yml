@@ -32,6 +32,10 @@ services:
       MYSQL_DATABASE: database
       MYSQL_USER: db_user
       MYSQL_PASSWORD: db_password
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
 
   # Service PHPMyAdmin
   phpmyadmin:
