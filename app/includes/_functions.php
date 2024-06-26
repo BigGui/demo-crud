@@ -29,3 +29,25 @@ function redirectTo(string $url): void
     header('Location: ' . $url);
     exit;
 }
+
+
+function getHtmlErrors(array $errorsList): string
+{
+    if (isset($_SESSION['error'])) {
+        $e = $_SESSION['error'];
+        unset($_SESSION['error']);
+        return '<p class="notif-error">' . $errorsList[$e] . '</p>';
+    }
+    return '';
+}
+
+function getHtmlMessages(array $messagesList): string
+{
+
+    if (isset($_SESSION['msg'])) {
+        $m = $_SESSION['msg'];
+        unset($_SESSION['msg']);
+        return '<p class="notif-success">' . $messagesList[$m] . '</p>';
+    }
+    return '';
+}

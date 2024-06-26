@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-
+include 'includes/_config.php';
 include 'includes/_functions.php';
 include 'includes/_database.php';
 
@@ -25,7 +25,7 @@ if (!empty($_POST)) {
     }
 
     if (strlen($_POST['name_product']) > 50) {
-        $errorsList[] = 'Saisissez un nom pour de produit de 50 caractères au maximum';
+        $errorsList[] = 'Saisissez un nom pour le produit de 50 caractères au maximum';
     }
 
     if (!isset($_POST['price']) || !is_numeric($_POST['price'])) {
@@ -47,7 +47,7 @@ if (!empty($_POST)) {
         } else {
             $_SESSION['error'] = 'insert_ko';
         }
-        
+
         redirectTo('index.php');
     }
 }
@@ -85,26 +85,9 @@ if (!empty($_GET) && isset($_GET['action']) && $_GET['action'] === 'increase' &&
     </h1>
 
     <?php
+    echo getHtmlErrors($errors);
+    echo getHtmlMessages($messages);
 
-    $errors = [
-        'csrf' => 'Votre session est invalide.',
-        'referer' => 'D\'où venez vous ?',
-        'insert_ko' => 'Erreur lors de la sauvegarde de la produit.',
-        'update_ko' => 'Erreur lors de la modif du produit.'
-    ];
-    if (isset($_SESSION['error'])) {
-        echo '<p class="notif-error">' . $errors[$_SESSION['error']] . '</p>';
-        unset($_SESSION['error']);
-    }
-
-    $messages = [
-        'insert_ok' => 'Produit sauvegardé.',
-        'update_ok' => 'Produit modifié.'
-    ];
-    if (isset($_SESSION['msg'])) {
-        echo '<p class="notif-success">' . $messages[$_SESSION['msg']] . '</p>';
-        unset($_SESSION['msg']);
-    }
     ?>
 
     <h2>Ajouter un produit</h2>
