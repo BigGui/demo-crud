@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+
 include 'includes/_functions.php';
 include 'includes/_database.php';
 
@@ -57,7 +58,7 @@ if (!empty($_GET) && isset($_GET['action']) && $_GET['action'] === 'increase' &&
     $query = $dbCo->prepare("UPDATE product SET price = price * 1.1 WHERE ref_product = :id;");
     $isUpdateOk = $query->execute(['id' => intval($_GET['id'])]);
 
-    if ($isInsertOk) {
+    if ($isUpdateOk) {
         $_SESSION['msg'] = 'update_ok';
     } else {
         $_SESSION['error'] = 'update_ko';
@@ -97,7 +98,7 @@ if (!empty($_GET) && isset($_GET['action']) && $_GET['action'] === 'increase' &&
         echo '<p class="notif-error">' . $errors[$_SESSION['error']] . '</p>';
         unset($_SESSION['error']);
     }
-    
+
     $messages = [
         'insert_ok' => 'Produit sauvegardé.',
         'update_ok' => 'Produit modifié.'
@@ -119,11 +120,11 @@ if (!empty($_GET) && isset($_GET['action']) && $_GET['action'] === 'increase' &&
         <ul>
             <li>
                 <label for="name_product">Nom du produit</label>
-                <input type="text" name="name_product" id="name_product" value="<?=isset($_POST['name_product']) ? $_POST['name_product'] : ''?>" placeholder="Oil - Canola" maxlength="50" required>
+                <input type="text" name="name_product" id="name_product" value="<?= isset($_POST['name_product']) ? $_POST['name_product'] : '' ?>" placeholder="Oil - Canola" maxlength="50" required>
             </li>
             <li>
                 <label for="price">Prix du produit</label>
-                <input type="text" name="price" id="price" value="<?=isset($_POST['price']) ? $_POST['price'] : ''?>" placeholder="9.90" maxlength="16" required>
+                <input type="text" name="price" id="price" value="<?= isset($_POST['price']) ? $_POST['price'] : '' ?>" placeholder="9.90" maxlength="16" required>
             </li>
         </ul>
         <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
@@ -145,7 +146,10 @@ if (!empty($_GET) && isset($_GET['action']) && $_GET['action'] === 'increase' &&
 
         // foreach ($query->fetchAll() as $product) {
         while ($product = $query->fetch()) {
-            echo '<li>' . $product['name_product'] . ' (' . $product['price'] . ' €) <a href="?action=increase&id=' . $product['ref_product'] . '">augmenter</a></li>';
+            echo '<li>'
+                . $product['name_product'] . ' (' . $product['price'] . ' €)'
+                . ' <a href="?action=increase&id=' . $product['ref_product'] . '">augmenter</a>'
+                . '</li>';
         }
         ?>
     </ul>
