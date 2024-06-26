@@ -7,68 +7,6 @@ include 'includes/_database.php';
 
 generateToken();
 
-if (!empty($_POST)) {
-
-    if (!isset($_SERVER['HTTP_REFERER']) || !str_contains($_SERVER['HTTP_REFERER'], 'http://localhost:8080')) {
-        $_SESSION['error'] = 'referer';
-        redirectTo('index.php');
-    }
-
-    if (!isset($_SESSION['token']) || !isset($_POST['token']) || $_SESSION['token'] !== $_POST['token']) {
-        $_SESSION['error'] = 'csrf';
-        redirectTo('index.php');
-    }
-
-    $errorsList = [];
-    if (!isset($_POST['name_product']) || strlen($_POST['name_product']) === 0) {
-        $errorsList[] = 'Saisissez un nom pour le produit';
-    }
-
-    if (strlen($_POST['name_product']) > 50) {
-        $errorsList[] = 'Saisissez un nom pour le produit de 50 caractères au maximum';
-    }
-
-    if (!isset($_POST['price']) || !is_numeric($_POST['price'])) {
-        $errorsList[] = 'Saisissez un prix au format numérique.';
-    }
-
-    if (empty($errorsList)) {
-        $insert = $dbCo->prepare("INSERT INTO `product`(`name_product`, `price`) VALUES (:name, :price);");
-
-        $bindValues = [
-            'name' => htmlspecialchars($_POST['name_product']),
-            'price' => round($_POST['price'], 2)
-        ];
-
-        $isInsertOk = $insert->execute($bindValues);
-
-        if ($isInsertOk) {
-            $_SESSION['msg'] = 'insert_ok';
-        } else {
-            $_SESSION['error'] = 'insert_ko';
-        }
-
-        redirectTo('index.php');
-    }
-}
-
-if (!empty($_GET) && isset($_GET['action']) && $_GET['action'] === 'increase' && isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $query = $dbCo->prepare("UPDATE product SET price = price * 1.1 WHERE ref_product = :id;");
-    $isUpdateOk = $query->execute(['id' => intval($_GET['id'])]);
-
-    if ($isUpdateOk) {
-        $_SESSION['msg'] = 'update_ok';
-    } else {
-        $_SESSION['error'] = 'update_ko';
-    }
-    header('Location: index.php');
-    exit;
-}
-
-
-
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -93,11 +31,12 @@ if (!empty($_GET) && isset($_GET['action']) && $_GET['action'] === 'increase' &&
     <h2>Ajouter un produit</h2>
 
     <?php
-    if (!empty($errorsList)) {
-        echo '<ul>' . implode(array_map(fn ($e) => '<li>' . $e . '</li>', $errorsList)) . '</ul>';
+    if (!empty($_SESSION['errorsList'])) {
+        echo '<ul>' . implode(array_map(fn ($e) => '<li>' . $e . '</li>', $_SESSION['errorsList'])) . '</ul>';
+        unset($_SESSION['errorsList']);
     }
     ?>
-    <form action="" method="post">
+    <form action="actions.php" method="post">
         <ul>
             <li>
                 <label for="name_product">Nom du produit</label>
@@ -109,6 +48,7 @@ if (!empty($_GET) && isset($_GET['action']) && $_GET['action'] === 'increase' &&
             </li>
         </ul>
         <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
+        <input type="hidden" name="action" value="create">
         <input type="submit" value="Ajouter le produit">
     </form>
     <h2>Tous nos produits</h2>
@@ -129,7 +69,7 @@ if (!empty($_GET) && isset($_GET['action']) && $_GET['action'] === 'increase' &&
         while ($product = $query->fetch()) {
             echo '<li>'
                 . $product['name_product'] . ' (' . $product['price'] . ' €)'
-                . ' <a href="?action=increase&id=' . $product['ref_product'] . '">augmenter</a>'
+                . ' <a href="actions.php?action=increase&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">augmenter</a>'
                 . '</li>';
         }
         ?>

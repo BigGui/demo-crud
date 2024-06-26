@@ -62,3 +62,23 @@ function getHtmlMessages(array $messagesList): string
     }
     return '';
 }
+
+/**
+ * Verify HTTP referer and token. Redirect with error message.
+ *
+ * @return void
+ */
+function preventCSRF(string $redirectUrl = 'index.php'): void
+{
+    global $globalUrl;
+
+    if (!isset($_SERVER['HTTP_REFERER']) || !str_contains($_SERVER['HTTP_REFERER'], $globalUrl)) {
+        $_SESSION['error'] = 'referer';
+        redirectTo($redirectUrl);
+    }
+
+    if (!isset($_SESSION['token']) || !isset($_REQUEST['token']) || $_SESSION['token'] !== $_REQUEST['token']) {
+        $_SESSION['error'] = 'csrf';
+        redirectTo($redirectUrl);
+    }
+}
