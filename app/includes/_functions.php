@@ -135,3 +135,13 @@ function getHTMLProduct(array $product): string
     return $product['name_product'] . ' (' . $product['price'] . ' €)'
         . ' <a href="actions.php?action=increase&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">augmenter</a>';
 }
+
+/**
+ * Remove data feedback to display in the form.
+ *
+ * @return void
+ */
+function eraseFormData(): void
+{
+    unset($_SESSION['formData']);
+}
