@@ -25,21 +25,31 @@ if ($_REQUEST['action'] === 'increase' && isset($_REQUEST['id']) && is_numeric($
     }
 }
 
-// Add a new prodcut from form
+// Update a product from form
+else if ($_REQUEST['action'] === 'modify' && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_REQUEST['ref_product']) && is_numeric($_REQUEST['ref_product'])) {
+    if (!checkProductInfo($_REQUEST)) {
+        redirectTo('index.php');
+    }
+
+    $query = $dbCo->prepare("UPDATE product SET name_product = :name_product, price = :price WHERE ref_product = :ref_product;");
+
+    $isUpdateOk = $query->execute([
+        'name_product' => htmlspecialchars($_REQUEST['name_product']),
+        'price' => round($_REQUEST['price'], 2),
+        'ref_product' => intval($_REQUEST['ref_product'])
+    ]);
+
+    if ($isUpdateOk && $query->rowCount() === 1) {
+        $_SESSION['msg'] = 'update_ok';
+    }
+    else {
+        addError('update_ko');
+    }
+}
+
+// Add a new product from form
 else if ($_REQUEST['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_REQUEST['name_product']) || strlen($_REQUEST['name_product']) === 0) {
-        addError('product_name');
-    }
-    
-    if (strlen($_REQUEST['name_product']) > 50) {
-        addError('product_name_size');
-    }
-
-    if (!isset($_REQUEST['price']) || !is_numeric($_REQUEST['price'])) {
-        addError('product_price');
-    }
-
-    if (!empty($_SESSION['errorsList'])) {
+    if (!checkProductInfo($_REQUEST)) {
         $_SESSION['formData'] = [
             'name_product' => $_REQUEST['name_product'],
             'price' => $_REQUEST['price']
@@ -50,8 +60,8 @@ else if ($_REQUEST['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POS
     $insert = $dbCo->prepare("INSERT INTO `product`(`name_product`, `price`) VALUES (:name, :price);");
 
     $isInsertOk = $insert->execute([
-        'name' => htmlspecialchars($_POST['name_product']),
-        'price' => round($_POST['price'], 2)
+        'name' => htmlspecialchars($_REQUEST['name_product']),
+        'price' => round($_REQUEST['price'], 2)
     ]);
 
     if ($isInsertOk) {

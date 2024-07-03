@@ -133,7 +133,8 @@ function addError(string $errorMsg): void
 function getHTMLProduct(array $product): string
 {
     return $product['name_product'] . ' (' . $product['price'] . ' €)'
-        . ' <a href="actions.php?action=increase&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">augmenter</a>';
+        . ' <a href="actions.php?action=increase&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">augmenter</a> | '
+        . ' <a href="index.php?action=edit&id=' . $product['ref_product'] . '">modifier</a>';
 }
 
 /**
@@ -144,4 +145,22 @@ function getHTMLProduct(array $product): string
 function eraseFormData(): void
 {
     unset($_SESSION['formData']);
+}
+
+
+function checkProductInfo(array $productData): bool
+{
+    if (!isset($_REQUEST['name_product']) || strlen($_REQUEST['name_product']) === 0) {
+        addError('product_name');
+    }
+    
+    if (strlen($_REQUEST['name_product']) > 50) {
+        addError('product_name_size');
+    }
+    
+    if (!isset($_REQUEST['price']) || !is_numeric($_REQUEST['price'])) {
+        addError('product_price');
+    }
+
+    return empty($_SESSION['errorsList']);
 }
