@@ -146,7 +146,7 @@ function addMessage(string $message): void
 function getHTMLProduct(array $product): string
 {
 
-    return $product['priority'] . '. '. $product['name_product'] . ' (' . $product['price'] . ' €)'
+    return $product['priority'] . '. ' . $product['name_product'] . ' (' . $product['price'] . ' €)'
         . ' <a href="actions.php?action=increase&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">💰</a> '
         . ' <a href="actions.php?action=up&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">⬆️</a> '
         . ' <a href="actions.php?action=down&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">⬇️</a> '
@@ -172,15 +172,15 @@ function eraseFormData(): void
  */
 function checkProductInfo(array $productData): bool
 {
-    if (!isset($_REQUEST['name_product']) || strlen($_REQUEST['name_product']) === 0) {
+    if (!isset($productData['name_product']) || strlen($productData['name_product']) === 0) {
         addError('product_name');
     }
 
-    if (strlen($_REQUEST['name_product']) > 50) {
+    if (strlen($productData['name_product']) > 50) {
         addError('product_name_size');
     }
 
-    if (!isset($_REQUEST['price']) || !is_numeric($_REQUEST['price'])) {
+    if (!isset($productData['price']) || !is_numeric($productData['price'])) {
         addError('product_price');
     }
 
@@ -224,4 +224,54 @@ function getHtmlProductForm(string $action = 'create', array $data = []): string
         . '</form>';
 
     return $html;
+}
+
+/**
+ * Change product priority up or down.
+ *
+ * @param PDO $db Connection to the database
+ * @param integer $changingValue -1 to up priority / 1 to up priority
+ * @param integer $id ref_product to move
+ * @return void
+ */
+function changeProductPriority(PDO $db, int $changingValue, int $id): void
+{
+    try {
+        $db->beginTransaction();
+    
+        $query = $db->prepare("SELECT ref_product FROM product WHERE priority = (
+            SELECT priority + :changingValue FROM product WHERE ref_product = :id
+        );");
+        $query->execute([
+            'id' => $id,
+            'changingValue' => $changingValue
+        ]);
+    
+        $idToMove = intval($query->fetchColumn());
+        if ($idToMove !== false) {
+            $queryUpdate = $db->prepare("UPDATE product SET priority = priority + :changingValue WHERE ref_product = :id;");
+            $queryUpdate->execute([
+                'id' => $idToMove,
+                'changingValue' => $changingValue * -1
+            ]);
+        } 
+    
+        $queryUpdate = $db->prepare("UPDATE product SET priority = priority + :changingValue WHERE ref_product = :id;");
+        $isUpdateOk = $queryUpdate->execute([
+            'id' => $id,
+            'changingValue' => $changingValue
+        ]);
+    
+        $db->commit();
+    
+        if ($isUpdateOk) {
+            addMessage('update_ok');
+        } else {
+            addError('update_ko');
+        }
+        
+    } catch (Exception $e) {
+        $db->rollBack();
+        addError('update_ko');
+    }
 }

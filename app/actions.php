@@ -72,26 +72,12 @@ else if ($_REQUEST['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POS
 
 // Rise priority
 else if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'up' && isset($_REQUEST['id']) && is_numeric($_REQUEST['id'])) {
+    changeProductPriority($dbCo, -1, $_REQUEST['id']);
+}
 
-    $query = $dbCo->prepare("SELECT ref_product FROM product WHERE priority = (
-	    SELECT priority - 1 FROM product WHERE ref_product = :id
-    );");
-    $query->execute(['id' => intval($_REQUEST['id'])]);
-    
-    $idToMove = intval($query->fetchColumn());
-    if ($idToMove !== false) {
-        $queryUpdate = $dbCo->prepare("UPDATE product SET priority = priority + 1 WHERE ref_product = :id;");
-        $queryUpdate->execute(['id' => $idToMove]);
-    } 
-
-    $queryUpdate = $dbCo->prepare("UPDATE product SET priority = priority - 1 WHERE ref_product = :id;");
-    $isUpdateOk = $queryUpdate->execute(['id' => intval($_REQUEST['id'])]);
-
-    if ($isUpdateOk) {
-        addMessage('update_ok');
-    } else {
-        addError('update_ko');
-    }
+// Down priority
+else if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'down' && isset($_REQUEST['id']) && is_numeric($_REQUEST['id'])) {
+    changeProductPriority($dbCo, 1, $_REQUEST['id']);
 }
 
 redirectTo('index.php');
