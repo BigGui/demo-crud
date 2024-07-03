@@ -145,9 +145,12 @@ function addMessage(string $message): void
  */
 function getHTMLProduct(array $product): string
 {
-    return $product['name_product'] . ' (' . $product['price'] . ' €)'
-        . ' <a href="actions.php?action=increase&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">augmenter</a> | '
-        . ' <a href="index.php?action=edit&id=' . $product['ref_product'] . '">modifier</a>';
+
+    return $product['priority'] . '. '. $product['name_product'] . ' (' . $product['price'] . ' €)'
+        . ' <a href="actions.php?action=increase&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">💰</a> '
+        . ' <a href="actions.php?action=up&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">⬆️</a> '
+        . ' <a href="actions.php?action=down&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">⬇️</a> '
+        . ' <a href="index.php?action=edit&id=' . $product['ref_product'] . '">🖋️</a>';
 }
 
 /**

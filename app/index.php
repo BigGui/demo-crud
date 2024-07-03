@@ -59,15 +59,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) 
     <ul>
         <?php
 
-        $minPrice = 0;
-        $maxPrice = 100;
-
-        $query = $dbCo->prepare("SELECT ref_product, name_product, price FROM product WHERE price BETWEEN :min AND :max;");
-
-        $query->execute([
-            'min' => $minPrice,
-            'max' => $maxPrice
-        ]);
+        $query = $dbCo->query("SELECT ref_product, name_product, price, priority FROM product ORDER BY priority ASC;");
 
         while ($product = $query->fetch()) {
             echo '<li>' . getHTMLProduct($product) . '</li>';
