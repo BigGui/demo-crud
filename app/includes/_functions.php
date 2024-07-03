@@ -124,6 +124,19 @@ function addError(string $errorMsg): void
     $_SESSION['errorsList'][] = $errorMsg;
 }
 
+
+/**
+ * Add a new message to display on next page. 
+ *
+ * @param string $message - Message to display
+ * @return void
+ */
+function addMessage(string $message): void
+{
+    $_SESSION['msg'] = $message;
+}
+
+
 /**
  * Get HTML to display a product in the list
  *
@@ -148,16 +161,22 @@ function eraseFormData(): void
 }
 
 
+/**
+ * Check for product fata format
+ *
+ * @param array $productData An array containing product data
+ * @return boolean Is there errors in product data ?
+ */
 function checkProductInfo(array $productData): bool
 {
     if (!isset($_REQUEST['name_product']) || strlen($_REQUEST['name_product']) === 0) {
         addError('product_name');
     }
-    
+
     if (strlen($_REQUEST['name_product']) > 50) {
         addError('product_name_size');
     }
-    
+
     if (!isset($_REQUEST['price']) || !is_numeric($_REQUEST['price'])) {
         addError('product_price');
     }

@@ -19,7 +19,7 @@ if ($_REQUEST['action'] === 'increase' && isset($_REQUEST['id']) && is_numeric($
     $isUpdateOk = $query->execute(['id' => intval($_REQUEST['id'])]);
 
     if ($isUpdateOk) {
-        $_SESSION['msg'] = 'update_ok';
+        addMessage('update_ok');
     } else {
         addError('update_ko');
     }
@@ -40,7 +40,7 @@ else if ($_REQUEST['action'] === 'modify' && $_SERVER['REQUEST_METHOD'] === 'POS
     ]);
 
     if ($isUpdateOk && $query->rowCount() === 1) {
-        $_SESSION['msg'] = 'update_ok';
+        addMessage('update_ok');
     }
     else {
         addError('update_ko');
@@ -65,7 +65,7 @@ else if ($_REQUEST['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POS
     ]);
 
     if ($isInsertOk) {
-        $_SESSION['msg'] = 'insert_ok';
+        addMessage('insert_ok');
     } else {
         addError('insert_ko');
     }
