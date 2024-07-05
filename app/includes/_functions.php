@@ -146,8 +146,8 @@ function addMessage(string $message): void
 function getHTMLProduct(array $product): string
 {
 
-    return $product['priority'] . '. ' . $product['name_product'] . ' (' . $product['price'] . ' €)'
-        . ' <a href="actions.php?action=increase&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">💰</a> '
+    return $product['priority'] . '. ' . $product['name_product'] . ' (<span data-price-id="' . $product['ref_product'] . '">' . $product['price'] . '</span> €)'
+        . ' <button type="button" class="js-increase-btn" data-increase-id="' . $product['ref_product'] . '">💰</button> '
         . ' <a href="actions.php?action=up&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">⬆️</a> '
         . ' <a href="actions.php?action=down&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">⬇️</a> '
         . ' <a href="index.php?action=edit&id=' . $product['ref_product'] . '">🖋️</a>';
@@ -218,7 +218,7 @@ function getHtmlProductForm(string $action = 'create', array $data = []): string
         'modify' => 'Modifier le produit'
     ];
 
-    $html .= '<input type="hidden" name="token" value="' . $_SESSION['token'] . '">'
+    $html .= '<input type="hidden" id="token" name="token" value="' . $_SESSION['token'] . '">'
         . '<input type="hidden" name="action" value="' . $action . '">'
         . '<input type="submit" value="' . $buttonText[$action] . '">'
         . '</form>';
