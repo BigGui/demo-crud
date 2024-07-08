@@ -136,15 +136,18 @@ function preventCSRF(string $redirectUrl = 'index.php'): void
 }
 
 /**
- * Verify HTTP referer and token for API calls
- *
- * @return void
- */
-function preventCSRFAPI(): void
+  * Verify HTTP referer and token for API calls
+  *
+  * @param array $inputData
+  * @return void
+  */
+function preventCSRFAPI(array $inputData): void
 {
     if (!isRefererOk()) triggerError('referer');
 
-    if (!isTokenOk()) triggerError('csrf');
+    if (!isset($_SESSION['token']) || !isset($inputData['token']) || $_SESSION['token'] !== $inputData['token']) {
+        triggerError('csrf');
+    }
 }
 
 
@@ -158,11 +161,11 @@ function triggerError(string $error): void
 {
     global $errors;
 
-    $response = [
+    echo json_encode([
         'isOk' => false,
         'errorMessage' => $errors[$error]
-    ];
-    echo json_encode($response);
+    ]);
+
     exit;
 }
 
