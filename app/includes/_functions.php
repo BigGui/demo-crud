@@ -90,6 +90,33 @@ function getHtmlMessages(array $messagesList): string
     return '';
 }
 
+
+/**
+ * Check fo referer
+ *
+ * @return boolean Is the current referer valid ?
+ */
+function isRefererOk(): bool
+{
+    global $globalUrl;
+    return isset($_SERVER['HTTP_REFERER'])
+        && str_contains($_SERVER['HTTP_REFERER'], $globalUrl);
+}
+
+
+/**
+ * Check for CSRF token
+ *
+ * @return boolean Is there a valid toekn in user session ?
+ */
+function isTokenOk(): bool
+{
+    return isset($_SESSION['token'])
+        && isset($_REQUEST['token'])
+        && $_SESSION['token'] === $_REQUEST['token'];
+}
+
+
 /**
  * Verify HTTP referer and token. Redirect with error message.
  *
@@ -97,19 +124,16 @@ function getHtmlMessages(array $messagesList): string
  */
 function preventCSRF(string $redirectUrl = 'index.php'): void
 {
-    global $globalUrl;
-
-    if (!isset($_SERVER['HTTP_REFERER']) || !str_contains($_SERVER['HTTP_REFERER'], $globalUrl)) {
+    if (!isRefererOk()) {
         addError('referer');
         redirectTo($redirectUrl);
     }
 
-    if (!isset($_SESSION['token']) || !isset($_REQUEST['token']) || $_SESSION['token'] !== $_REQUEST['token']) {
+    if (!isTokenOk()) {
         addError('csrf');
         redirectTo($redirectUrl);
     }
 }
-
 
 /**
  * Verify HTTP referer and token for API calls
@@ -118,17 +142,9 @@ function preventCSRF(string $redirectUrl = 'index.php'): void
  */
 function preventCSRFAPI(): void
 {
-    global $globalUrl;
+    if (!isRefererOk()) triggerError('referer');
 
-    if (!isset($_SERVER['HTTP_REFERER']) || !str_contains($_SERVER['HTTP_REFERER'], $globalUrl)) {
-        $error = 'referer';
-    }
-
-    if (!isset($_SESSION['token']) || !isset($_REQUEST['token']) || $_SESSION['token'] !== $_REQUEST['token']) {
-        $error = 'csrf';
-    }
-
-    if (isset($error)) triggerError($error);
+    if (!isTokenOk()) triggerError('csrf');
 }
 
 
