@@ -10,7 +10,8 @@ $errors = [
     'product_name' => 'Saisissez un nom pour le produit',
     'product_name_size' => 'Saisissez un nom pour le produit de 50 caractères au maximum',
     'product_price' => 'Saisissez un prix au format numérique.',
-    'product_edit_not_exist' => 'Le produit à modifier n\'existe pas.'
+    'product_edit_not_exist' => 'Le produit à modifier n\'existe pas.',
+    'no_action' => 'Aucune action identifiée.'
 ];
 
 $messages = [

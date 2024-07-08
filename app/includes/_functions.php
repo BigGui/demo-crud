@@ -110,6 +110,47 @@ function preventCSRF(string $redirectUrl = 'index.php'): void
     }
 }
 
+
+/**
+ * Verify HTTP referer and token for API calls
+ *
+ * @return void
+ */
+function preventCSRFAPI(): void
+{
+    global $globalUrl;
+
+    if (!isset($_SERVER['HTTP_REFERER']) || !str_contains($_SERVER['HTTP_REFERER'], $globalUrl)) {
+        $error = 'referer';
+    }
+
+    if (!isset($_SESSION['token']) || !isset($_REQUEST['token']) || $_SESSION['token'] !== $_REQUEST['token']) {
+        $error = 'csrf';
+    }
+
+    if (isset($error)) triggerError($error);
+}
+
+
+/**
+ * Print an error in json format and stop script.
+ *
+ * @param string $error Error code from errors array available in _congig.php
+ * @return void
+ */
+function triggerError(string $error): void
+{
+    global $errors;
+
+    $response = [
+        'isOk' => false,
+        'errorMessage' => $errors[$error]
+    ];
+    echo json_encode($response);
+    exit;
+}
+
+
 /**
  * Add a new error message to display on next page. 
  *
@@ -147,7 +188,7 @@ function getHTMLProduct(array $product): string
 {
 
     return $product['priority'] . '. ' . $product['name_product'] . ' (<span data-price-id="' . $product['ref_product'] . '">' . $product['price'] . '</span> €)'
-        . ' <button type="button" class="js-increase-btn" data-increase-id="' . $product['ref_product'] . '">💰</button> '
+        . ' <button type="button" data-increase-id="' . $product['ref_product'] . '">💰</button> '
         . ' <a href="actions.php?action=up&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">⬆️</a> '
         . ' <a href="actions.php?action=down&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">⬇️</a> '
         . ' <a href="index.php?action=edit&id=' . $product['ref_product'] . '">🖋️</a>';
@@ -238,7 +279,7 @@ function changeProductPriority(PDO $db, int $changingValue, int $id): void
 {
     try {
         $db->beginTransaction();
-    
+
         $query = $db->prepare("SELECT ref_product FROM product WHERE priority = (
             SELECT priority + :changingValue FROM product WHERE ref_product = :id
         );");
@@ -246,7 +287,7 @@ function changeProductPriority(PDO $db, int $changingValue, int $id): void
             'id' => $id,
             'changingValue' => $changingValue
         ]);
-    
+
         $idToMove = intval($query->fetchColumn());
         if ($idToMove !== false) {
             $queryUpdate = $db->prepare("UPDATE product SET priority = priority + :changingValue WHERE ref_product = :id;");
@@ -254,22 +295,21 @@ function changeProductPriority(PDO $db, int $changingValue, int $id): void
                 'id' => $idToMove,
                 'changingValue' => $changingValue * -1
             ]);
-        } 
-    
+        }
+
         $queryUpdate = $db->prepare("UPDATE product SET priority = priority + :changingValue WHERE ref_product = :id;");
         $isUpdateOk = $queryUpdate->execute([
             'id' => $id,
             'changingValue' => $changingValue
         ]);
-    
+
         $db->commit();
-    
+
         if ($isUpdateOk) {
             addMessage('update_ok');
         } else {
             addError('update_ko');
         }
-        
     } catch (Exception $e) {
         $db->rollBack();
         addError('update_ko');
