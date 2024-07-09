@@ -104,12 +104,12 @@ function isRefererOk(): bool
 }
 
 
- /**
-  * Check for CSRF token
-  *
-  * @param array|null $data Input data
-  * @return boolean Is there a valid toekn in user session ?
-  */
+/**
+ * Check for CSRF token
+ *
+ * @param array|null $data Input data
+ * @return boolean Is there a valid toekn in user session ?
+ */
 function isTokenOk(?array $data = null): bool
 {
     if (!is_array($data)) $data = $_REQUEST;
@@ -139,11 +139,11 @@ function preventCSRF(string $redirectUrl = 'index.php'): void
 }
 
 /**
-  * Verify HTTP referer and token for API calls
-  *
-  * @param array $inputData
-  * @return void
-  */
+ * Verify HTTP referer and token for API calls
+ *
+ * @param array $inputData
+ * @return void
+ */
 function preventCSRFAPI(array $inputData): void
 {
     if (!isRefererOk()) triggerError('referer');
@@ -280,4 +280,17 @@ function changeProductPriority(PDO $db, int $changingValue, int $id): void
         $db->rollBack();
         addError('update_ko');
     }
+}
+
+/**
+ * Return the priority for a new product
+ *
+ * @param PDO $db PDO instance for database connection
+ * @return integer The new priority rank
+ */
+function getNewProductPriority(PDO $db): int
+{
+    $query = $db->query("SELECT MAX(priority) AS max_priority FROM product;");
+
+    return intval($query->fetchColumn()) + 1;
 }

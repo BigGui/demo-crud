@@ -64,14 +64,16 @@ else if ($_SERVER['REQUEST_METHOD'] === 'DELETE' && $inputData['action'] === 'de
 else if ($inputData['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!checkProductInfo($inputData)) triggerError('insert_ko');
 
-    $insert = $dbCo->prepare("INSERT INTO `product`(`name_product`, `price`) VALUES (:name, :price);");
+    $insert = $dbCo->prepare("INSERT INTO `product`(`name_product`, `price`, `priority`)
+        VALUES (:name, :price, :priority);");
 
     $inputData['nameProduct'] = htmlspecialchars($inputData['nameProduct']);
     $inputData['price'] = round($inputData['price'], 2);
 
     $isInsertOk = $insert->execute([
         'name' => $inputData['nameProduct'],
-        'price' => $inputData['price']
+        'price' => $inputData['price'],
+        'priority' => getNewProductPriority($dbCo)
     ]);
 
     if (!$isInsertOk) triggerError('insert_ko');
