@@ -6,3 +6,10 @@ document.querySelectorAll('[data-increase-id]')
             Product.increasePrice(parseInt(this.dataset.increaseId));
         });
     });
+
+document.querySelectorAll('[data-delete-id]')
+    .forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            Product.deleteProduct(parseInt(this.dataset.deleteId));
+        });
+    });

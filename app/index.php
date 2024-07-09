@@ -41,6 +41,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) 
         <a href="">Mes tâches</a>
     </h1>
     <ul id="errorsList" class="errors"></ul>
+    <ul id="messagesList" class="messages"></ul>
     <?php
 
     echo getHtmlMessages($messages);
@@ -63,13 +64,17 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) 
         $query = $dbCo->query("SELECT ref_product, name_product, price, priority FROM product ORDER BY priority ASC;");
 
         while ($product = $query->fetch()) {
-            echo '<li>' . getHTMLProduct($product) . '</li>';
+            echo '<li class="js-product">' . getHTMLProduct($product) . '</li>';
         }
         ?>
     </ul>
 
     <template id="templateError">
         <li data-error-message="" class="errors__itm">Ici vient le message d'erreur</li>
+    </template>
+
+    <template id="templateMessage">
+        <li data-message="" class="messages__itm">Ici vient le message</li>
     </template>
 
 

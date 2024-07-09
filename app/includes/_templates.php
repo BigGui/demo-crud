@@ -13,6 +13,7 @@ function getHTMLProduct(array $product): string
         . ' <button type="button" data-increase-id="' . $product['ref_product'] . '">💰</button> '
         . ' <a href="actions.php?action=up&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">⬆️</a> '
         . ' <a href="actions.php?action=down&id=' . $product['ref_product'] . '&token=' . $_SESSION['token'] . '">⬇️</a> '
+        . ' <button type="button" data-delete-id="' . $product['ref_product'] . '">🗑️</button> '
         . ' <a href="index.php?action=edit&id=' . $product['ref_product'] . '">🖋️</a>';
 }
 
