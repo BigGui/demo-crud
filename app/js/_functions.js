@@ -31,17 +31,35 @@ function getToken() {
 
 /**
  * Increase product price for the given id.
- * @param {*} id - Product id 'ref_product'
+ * @param {int} id - Product id 'ref_product'
  */
 export function increasePrice(id) {
+    if (!Number.isInteger(id)) {
+        displayError("Impossible de déterminer l'identifiant du produit.");
+        return;
+    }
+
+    const token = getToken();
+    if (!token.length) {
+        displayError("Jeton invalide.");
+        return;
+    }
+
     callAPI('PUT', {
         action: 'increase',
         id: id,
-        token: getToken()
+        token: token
     })
         .then(data => {
             if (!data.isOk) {
-                console.error(data.errorMessage);
+                displayError(data.errorMessage);
+                return;
+            }
+
+            data.id = parseInt(data.id);
+            data.price = parseFloat(data.price);
+            if (!Number.isInteger(data.id) || data.price <= 0) {
+                displayError("Données reçues incohérentes");
                 return;
             }
             document.querySelector("[data-price-id='" + data.id + "']").innerText = data.price;
@@ -61,4 +79,16 @@ function deleteProduct(id) {
         .then(data => {
             // ...
         });
+}
+
+
+/**
+ * Display error message with template
+ * @param {string} errorMessage 
+ */
+function displayError(errorMessage) {
+    const li = document.importNode(document.getElementById('templateError').content, true);
+    li.querySelector('[data-error-message]').innerText = errorMessage;
+
+    document.getElementById('errorsList').appendChild(li);
 }

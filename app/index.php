@@ -39,7 +39,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) 
     <h1>
         <a href="">Mes tâches</a>
     </h1>
-
+    <ul id="errorsList" class="errors"></ul>
     <?php
 
     echo getHtmlMessages($messages);
@@ -66,6 +66,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) 
         }
         ?>
     </ul>
+
+    <template id="templateError">
+        <li data-error-message="" class="errors__itm">Ici vient le message d'erreur</li>
+    </template>
+
+
     <script type="module" src="js/script.js"></script>
 </body>
 
