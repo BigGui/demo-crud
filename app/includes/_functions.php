@@ -104,16 +104,19 @@ function isRefererOk(): bool
 }
 
 
-/**
- * Check for CSRF token
- *
- * @return boolean Is there a valid toekn in user session ?
- */
-function isTokenOk(): bool
+ /**
+  * Check for CSRF token
+  *
+  * @param array|null $data Input data
+  * @return boolean Is there a valid toekn in user session ?
+  */
+function isTokenOk(?array $data = null): bool
 {
+    if (!is_array($data)) $data = $_REQUEST;
+
     return isset($_SESSION['token'])
-        && isset($_REQUEST['token'])
-        && $_SESSION['token'] === $_REQUEST['token'];
+        && isset($data['token'])
+        && $_SESSION['token'] === $data['token'];
 }
 
 
@@ -145,9 +148,7 @@ function preventCSRFAPI(array $inputData): void
 {
     if (!isRefererOk()) triggerError('referer');
 
-    if (!isset($_SESSION['token']) || !isset($inputData['token']) || $_SESSION['token'] !== $inputData['token']) {
-        triggerError('csrf');
-    }
+    if (!isTokenOk($inputData)) triggerError('csrf');
 }
 
 
