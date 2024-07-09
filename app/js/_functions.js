@@ -108,7 +108,7 @@ export function deleteProduct(id) {
 /**
  * Create a new product
  * 
- * @param {*} data New product data
+ * @param {object} data New product data
  * @returns 
  */
 export function createProduct(data) {
@@ -140,9 +140,25 @@ export function createProduct(data) {
             }
 
             displayProduct(output);
-            displayMessage('Produit créé.');
+            displayMessage(output.message);
         });
 }
+
+export function getAllProduct() {
+    
+    callAPI('POST', {
+        action: 'fetchProducts',
+        token: getToken()
+    })
+        .then(products => {
+            console.table(products);
+            products.forEach(product => {
+                product['nameProduct'] = product['name_product'];
+                product['id'] = product['ref_product'];
+                displayProduct(product);
+            });
+        });
+} 
 
 
 /**
@@ -179,11 +195,16 @@ function displayProduct(data) {
     const li = document.importNode(document.getElementById('templateProduct').content, true);
     li.querySelector('[data-product-name]').innerText = data.nameProduct;
     li.querySelector('[data-price-id]').innerText = data.price;
+    li.querySelector('[data-price-id]').dataset.priceId = data.id;
     li.querySelector('[data-increase-id]').dataset.increaseId = data.id;
     li.querySelector('[data-delete-id]').dataset.deleteId = data.id;
     li.querySelector('[data-up-link]').setAttribute('href', 'actions.php?action=up&id=' + data.id + '&token=' + getToken());
     li.querySelector('[data-down-link]').setAttribute('href', 'actions.php?action=down&id=' + data.id + '&token=' + getToken());
     li.querySelector('[data-edit-link]').setAttribute('href', 'index.php?action=edit&id=' + data.id);
+
+    // li.querySelector('[data-increase-id]').addEventListener('click', function (e) {
+    //     increasePrice(parseInt(this.dataset.increaseId));
+    // });
 
     document.getElementById('productList').appendChild(li);
 }

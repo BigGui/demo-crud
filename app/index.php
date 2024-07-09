@@ -61,11 +61,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) 
     <ul id="productList">
         <?php
 
-        $query = $dbCo->query("SELECT ref_product, name_product, price, priority FROM product ORDER BY priority ASC;");
+        // $query = $dbCo->query("SELECT ref_product, name_product, price, priority FROM product ORDER BY priority ASC;");
 
-        while ($product = $query->fetch()) {
-            echo '<li class="js-product">' . getHTMLProduct($product) . '</li>';
-        }
+        // while ($product = $query->fetch()) {
+        //     echo '<li class="js-product">' . getHTMLProduct($product) . '</li>';
+        // }
         ?>
     </ul>
 

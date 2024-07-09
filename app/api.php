@@ -5,7 +5,7 @@ include 'includes/_config.php';
 include 'includes/_functions.php';
 include 'includes/_database.php';
 
-// header('Content-type:application/json');
+header('Content-type:application/json');
 
 $inputData = json_decode(file_get_contents('php://input'), true);
 
@@ -80,9 +80,17 @@ else if ($inputData['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'PO
 
     echo json_encode([
         'isOk' => true,
-        'message' => 'insert_ok',
+        'message' => $messages['insert_ok'],
         'id' => $dbCo->lastInsertId(),
         'nameProduct' => $inputData['nameProduct'],
         'price' => $inputData['price']
     ]);
+}
+
+// Get all product
+else if ($_SERVER['REQUEST_METHOD'] === 'POST' && $inputData['action'] === 'fetchProducts') {
+    
+        $query = $dbCo->query("SELECT ref_product, name_product, price, priority FROM product ORDER BY priority ASC;");
+
+        echo json_encode($query->fetchAll());
 }
