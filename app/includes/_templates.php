@@ -27,7 +27,7 @@ function getHTMLProduct(array $product): string
  */
 function getHtmlProductForm(string $action = 'create', array $data = []): string
 {
-    $html = '<form action="actions.php" method="post">'
+    $html = '<form id="productForm" action="actions.php" method="post">'
         . '<ul>'
         . '<li>'
         . '<label for="name_product">Nom du produit</label> '

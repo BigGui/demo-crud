@@ -58,7 +58,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) 
     eraseFormData();
     ?>
     <h2>Tous nos produits</h2>
-    <ul>
+    <ul id="productList">
         <?php
 
         $query = $dbCo->query("SELECT ref_product, name_product, price, priority FROM product ORDER BY priority ASC;");
@@ -75,6 +75,17 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) 
 
     <template id="templateMessage">
         <li data-message="" class="messages__itm">Ici vient le message</li>
+    </template>
+
+    <template id="templateProduct">
+        <li class="js-product" data-product-id="159">
+            <span data-product-name="">aze</span> (<span data-price-id="159">62.00</span> €)
+            <button type="button" data-increase-id="159">💰</button> 
+            <a data-up-link="" href="actions.php?action=up&amp;id=159&amp;token=99c6f3954cc44567f3c05e688873dd47">⬆️</a> 
+            <a data-down-link="" href="actions.php?action=down&amp;id=159&amp;token=99c6f3954cc44567f3c05e688873dd47">⬇️</a> 
+            <button type="button" data-delete-id="159">🗑️</button>
+            <a data-edit-link="" href="index.php?action=edit&amp;id=159">🖋️</a>
+        </li>
     </template>
 
 

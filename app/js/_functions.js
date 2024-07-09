@@ -86,7 +86,7 @@ export function deleteProduct(id) {
     callAPI('DELETE', {
         action: 'delete',
         id: id,
-        token: getToken()
+        token: token
     })
         .then(data => {
             if (!data.isOk) {
@@ -99,9 +99,48 @@ export function deleteProduct(id) {
                 displayError("Données reçues incohérentes");
                 return;
             }
-            
+
             document.querySelector("[data-delete-id='" + data.id + "']").closest('.js-product').remove();
             displayMessage('Produit supprimé avec succès.');
+        });
+}
+
+/**
+ * Create a new product
+ * 
+ * @param {*} data New product data
+ * @returns 
+ */
+export function createProduct(data) {
+
+    if (!data.nameProduct.length) {
+        displayError("Nom de produit invalide.");
+        return;
+    }
+
+    data.price = parseFloat(data.price);
+    if (!data.price) {
+        displayError("Prix invalide.");
+        return;
+    }
+
+    data.token = getToken();
+    if (!data.token.length) {
+        displayError("Jeton invalide.");
+        return;
+    }
+
+    data.action = 'create';
+
+    callAPI('POST', data)
+        .then(output => {
+            if (!output.isOk) {
+                displayError(data.errorMessage);
+                return;
+            }
+
+            displayProduct(output);
+            displayMessage('Produit créé.');
         });
 }
 
@@ -132,3 +171,19 @@ function displayMessage(message) {
     setTimeout(() => m.remove(), 2000);
 }
 
+/**
+ * Generate and display a produc in the product list from given data.
+ * @param {object} data 
+ */
+function displayProduct(data) {
+    const li = document.importNode(document.getElementById('templateProduct').content, true);
+    li.querySelector('[data-product-name]').innerText = data.nameProduct;
+    li.querySelector('[data-price-id]').innerText = data.price;
+    li.querySelector('[data-increase-id]').dataset.increaseId = data.id;
+    li.querySelector('[data-delete-id]').dataset.deleteId = data.id;
+    li.querySelector('[data-up-link]').setAttribute('href', 'actions.php?action=up&id=' + data.id + '&token=' + getToken());
+    li.querySelector('[data-down-link]').setAttribute('href', 'actions.php?action=down&id=' + data.id + '&token=' + getToken());
+    li.querySelector('[data-edit-link]').setAttribute('href', 'index.php?action=edit&id=' + data.id);
+
+    document.getElementById('productList').appendChild(li);
+}

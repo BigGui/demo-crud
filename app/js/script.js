@@ -13,3 +13,15 @@ document.querySelectorAll('[data-delete-id]')
             Product.deleteProduct(parseInt(this.dataset.deleteId));
         });
     });
+
+
+document.getElementById('productForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    Product.createProduct({
+        nameProduct: this.querySelector('[name="name_product"]').value,
+        price: this.querySelector('[name="price"]').value
+    });
+
+    return false;
+});

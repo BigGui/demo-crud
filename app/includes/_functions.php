@@ -217,11 +217,11 @@ function eraseFormData(): void
  */
 function checkProductInfo(array $productData): bool
 {
-    if (!isset($productData['name_product']) || strlen($productData['name_product']) === 0) {
+    if (!isset($productData['nameProduct']) || strlen($productData['nameProduct']) === 0) {
         addError('product_name');
     }
 
-    if (strlen($productData['name_product']) > 50) {
+    if (strlen($productData['nameProduct']) > 50) {
         addError('product_name_size');
     }
 

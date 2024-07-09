@@ -59,3 +59,28 @@ else if ($_SERVER['REQUEST_METHOD'] === 'DELETE' && $inputData['action'] === 'de
         triggerError('delete_ko');
     }
 }
+
+// Add a new product from form
+else if ($inputData['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!checkProductInfo($inputData)) triggerError('insert_ko');
+
+    $insert = $dbCo->prepare("INSERT INTO `product`(`name_product`, `price`) VALUES (:name, :price);");
+
+    $inputData['nameProduct'] = htmlspecialchars($inputData['nameProduct']);
+    $inputData['price'] = round($inputData['price'], 2);
+
+    $isInsertOk = $insert->execute([
+        'name' => $inputData['nameProduct'],
+        'price' => $inputData['price']
+    ]);
+
+    if (!$isInsertOk) triggerError('insert_ko');
+
+    echo json_encode([
+        'isOk' => true,
+        'message' => 'insert_ok',
+        'id' => $dbCo->lastInsertId(),
+        'nameProduct' => $inputData['nameProduct'],
+        'price' => $inputData['price']
+    ]);
+}
