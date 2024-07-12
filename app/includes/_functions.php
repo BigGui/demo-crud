@@ -294,3 +294,13 @@ function getNewProductPriority(PDO $db): int
 
     return intval($query->fetchColumn()) + 1;
 }
+
+/**
+ * Removes tags from given array values;.
+ *
+ * @param array $data - input values
+ */
+function stripTagsArray(array &$data):void
+{
+    $data = array_map('strip_tags', $data);
+}

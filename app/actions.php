@@ -12,6 +12,9 @@ if (!isset($_REQUEST['action'])) {
 // Check Referer and CSRF
 preventCSRF();
 
+// Removes tags from input data to prevent XSS failure
+stripTagsArray($_REQUEST);
+
 // Increase price from link
 if ($_REQUEST['action'] === 'increase' && isset($_REQUEST['id']) && is_numeric($_REQUEST['id'])) {
 
@@ -34,7 +37,7 @@ else if ($_REQUEST['action'] === 'modify' && $_SERVER['REQUEST_METHOD'] === 'POS
     $query = $dbCo->prepare("UPDATE product SET name_product = :name_product, price = :price WHERE ref_product = :ref_product;");
 
     $isUpdateOk = $query->execute([
-        'name_product' => htmlspecialchars($_REQUEST['name_product']),
+        'name_product' => $_REQUEST['name_product'],
         'price' => round($_REQUEST['price'], 2),
         'ref_product' => intval($_REQUEST['ref_product'])
     ]);
@@ -59,7 +62,7 @@ else if ($_REQUEST['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POS
     $insert = $dbCo->prepare("INSERT INTO `product`(`name_product`, `price`) VALUES (:name, :price);");
 
     $isInsertOk = $insert->execute([
-        'name' => htmlspecialchars($_REQUEST['name_product']),
+        'name' => $_REQUEST['name_product'],
         'price' => round($_REQUEST['price'], 2)
     ]);
 

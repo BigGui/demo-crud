@@ -16,6 +16,9 @@ if (!isset($inputData['action'])) {
 // Check CSRF
 preventCSRFAPI($inputData);
 
+// Removes tags from input data to prevent XSS failure
+stripTagsArray($inputData);
+
 // Increase price from link
 if ($_SERVER['REQUEST_METHOD'] === 'PUT' && $inputData['action'] === 'increase' && isset($inputData['id']) && is_numeric($inputData['id'])) {
 
@@ -67,7 +70,6 @@ else if ($inputData['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'PO
     $insert = $dbCo->prepare("INSERT INTO `product`(`name_product`, `price`, `priority`)
         VALUES (:name, :price, :priority);");
 
-    $inputData['nameProduct'] = htmlspecialchars($inputData['nameProduct']);
     $inputData['price'] = round($inputData['price'], 2);
 
     $isInsertOk = $insert->execute([
